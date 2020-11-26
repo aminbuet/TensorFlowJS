@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+<script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"> </script>
+
+<head>
+  <script>
+    async function loadModel() {
+      model = undefined;
+      model = await tf.loadLayersModel("./model.json");
+      console.log("model loaded")
+    }
+    loadModel();
+
+    function make_prediction() {
+      var   step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest, isFraud;
+      step            = Number(document.getElementById("step").value);
+      amount         = Number(document.getElementById("amount").value);
+      oldbalanceOrg   = Number(document.getElementById("oldbalanceOrg").value);
+      newbalanceOrig  = Number(document.getElementById("newbalanceOrig").value);
+      oldbalanceDest  = Number(document.getElementById("oldbalanceDest").value);
+      newbalanceDest  = Number(document.getElementById("newbalanceDest").value);
+      input_xs = tf.tensor2d([
+        [step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest]
+      ]);
+      output = model.predict(input_xs);
+      const outputData = isFraud.dataSync();
+      document.getElementById("answer").value = Number(outputData[0] > 0.5);
+    }
+  </script>
+</head>
+
+<body>
+  <center>
+    <p>Fraud Transaction Details</p>
+    <br>
+  </center>
+  <center>Enter the step number : <input id="step"></center>
+  <br> <br>
+  <center>Enter the amount: <input id="amount"></center>
+  <br> <br>
+  <center>Enter the oldbalanceOrg: <input id="oldbalanceOrg"></center>
+  <br> <br>
+  <center>Enter the newbalanceOrg: <input id="oldbalanceOrg"></center>
+  <br> <br>
+  <center>Enter the oldbalanceDest: <input id="oldbalanceDest"></center>
+  <br> <br>
+  <center>Enter the newbalanceDest: <input id="newbalanceDest"></center>
+  <br> <br>
+  <center><button onclick="make_prediction()">Make Fraud / notFraud Prediction</button></center>
+  <br> <br>
+  <center><input id="answer"></center>
+  <br> <br>
+</body>
+
+</html>
